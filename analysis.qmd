@@ -56,5 +56,18 @@ ggplot(
 ) +
   geom_line(alpha = 0.25) +
   scale_y_reverse()
+
+billboard_long |>
+  summarize(last_week = max(week), .by = c(artist, track)) |>
+  filter(last_week == 20) |>
+  left_join(
+    billboard_long |> filter(week == 20),
+    by = c("artist", "track")
+  ) |>
+  summarize(
+    songs = n(),
+    ranked_below_50 = sum(rank > 50)
+  ) |>
+  print()
 ```
  
