@@ -1,4 +1,25 @@
 ---
 title: "Billboard Hot 100"
 author: "Mireille"
+execute:
+  echo: false
 ---
+
+```{r}
+#| message: false
+
+library(tidyverse)
+```
+
+```{r}
+#| cache: true
+
+billboard <- read_csv("data/billboard.csv", show_col_types = FALSE)
+print(billboard)
+```
+
+```{r}
+billboard |>
+  select(artist, track, date.entered, wk1:wk4) |>
+  print()
+```
