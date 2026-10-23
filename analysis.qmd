@@ -20,6 +20,41 @@ print(billboard)
 
 ```{r}
 billboard |>
-  select(artist, track, date.entered, wk1:wk4) |>
+  summarize(
+    earliest_date = min(date.entered),
+    latest_date = max(date.entered)
+  ) |>
   print()
 ```
+
+```{r}
+billboard |>
+  select(wk1, wk4, wk10, wk20, wk40, wk76) |>
+  pivot_longer(everything(), names_to = "week", values_to = "ranking") |>
+  summarize(
+    missing = sum(is.na(ranking)),
+    present = sum(!is.na(ranking)),
+    .by = week
+  ) |>
+  print()
+```
+
+```{r}
+billboard_long <- billboard |>
+  pivot_longer(
+    wk1:wk76,
+    names_to = "week",
+    names_prefix = "wk",
+    names_transform = list(week = as.integer),
+    values_to = "rank",
+    values_drop_na = TRUE
+  )
+
+ggplot(
+  billboard_long,
+  aes(week, rank, group = interaction(artist, track))
+) +
+  geom_line(alpha = 0.25) +
+  scale_y_reverse()
+```
+ 
