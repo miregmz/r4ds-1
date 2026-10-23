@@ -69,5 +69,33 @@ billboard_long |>
     ranked_below_50 = sum(rank > 50)
   ) |>
   print()
+
+song_summary <- billboard_long |>
+  summarize(
+    first_rank = first(rank),
+    best_rank = min(rank),
+    first_best_week = min(week[rank == min(rank)]),
+    weeks_on_chart = n(),
+    .by = c(artist, track)
+  )
+
+number_one_songs <- song_summary |> filter(best_rank == 1)
+top_10_songs <- song_summary |> filter(best_rank <= 10)
+
+notable_songs <- bind_rows(
+  number_one_songs |>
+    slice_min(first_best_week, with_ties = TRUE) |>
+    mutate(notable = "Fastest to number one"),
+  number_one_songs |>
+    slice_max(first_best_week, with_ties = TRUE) |>
+    mutate(notable = "Slowest to number one"),
+  top_10_songs |>
+    slice_max(weeks_on_chart, with_ties = TRUE) |>
+    mutate(notable = "Longest chart run among top 10")
+) |>
+  select(notable, artist, track, first_rank, best_rank, first_best_week, weeks_on_chart)
+
+print(song_summary)
+print(notable_songs)
 ```
  
